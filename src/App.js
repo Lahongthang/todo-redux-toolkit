@@ -1,21 +1,17 @@
 import {useEffect} from 'react'
 import {useSelector, useDispatch} from 'react-redux'
-import { selectTodos, AddTodo } from './features/todos/todosSlice'
+import { selectTodos, AddTodo, selectEntities } from './features/todos/todosSlice'
+import TodoList from './features/todos/TodoList'
+import Header from './features/header/Header'
 
 function App() {
-  const dispatch = useDispatch()
-  const state = useSelector(state => state)
-  console.log('state: ', state)
-  const todos = useSelector(selectTodos)
-  console.log('todos: ', todos)
-
-  useEffect(() => {
-    dispatch(AddTodo('Something'))
-  }, [])
+  const entities = useSelector(selectEntities)
+  console.log('entities: ', entities)
 
   return (
     <div className="App">
-      
+      <Header/>
+      <TodoList/>
     </div>
   )
 }

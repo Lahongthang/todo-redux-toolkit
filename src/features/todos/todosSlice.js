@@ -22,6 +22,18 @@ export const AddTodo = createAsyncThunk('todos/addTodo', async newTodo => {
     return response
 })
 
+export const updateTodo = createAsyncThunk('todos/updateTodo', async ({id, completed, color}) => {
+    let url
+    if (completed !== undefined) {
+        url = `http://localhost:8000/api/todos/${id}?completed=${!completed}`
+    } else if (color !== undefined) {
+        url = `http://localhost:8000/api/todos/${id}?color=${color}`
+    }
+    const response = await fetch(url, {method: 'PUT'})
+        .then(res => res.json())
+    return response
+})
+
 const todosSlice = createSlice({
     name: 'todos',
     initialState,
@@ -40,12 +52,16 @@ const todosSlice = createSlice({
                 state.meta = action.payload.meta
                 todosAdapter.upsertMany(state, action.payload.data)
             })
-            .addCase(AddTodo.pending, (state, action) => {
+            .addCase(AddTodo.pending, (state) => {
                 state.status = 'loading'
             })
             .addCase(AddTodo.fulfilled, (state, action) => {
                 state.status = 'idle'
                 todosAdapter.addOne(state, action.payload.data)
+            })
+            .addCase(updateTodo.fulfilled, (state, action) => {
+                console.log('payload: ', action.payload)
+                // state.entities
             })
     }
 })
@@ -53,7 +69,8 @@ const todosSlice = createSlice({
 export const {
     selectAll: selectTodos,
     selectById: selectTodoById,
-    selectIds: selectTodoIds
+    selectIds: selectTodoIds,
+    selectEntities
 } = todosAdapter.getSelectors(state => state.todos)
 
 export default todosSlice.reducer
